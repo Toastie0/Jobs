@@ -142,8 +142,8 @@ See [MODDED_CONTENT_SUPPORT.md](MODDED_CONTENT_SUPPORT.md) for details.
 
 ```bash
 # Clone the repository
-git clone https://github.com/advancedplugins/jobs.git
-cd jobs
+git clone https://github.com/Toastie0/Jobs.git
+cd Jobs
 
 # Build with Gradle
 ./gradlew build
@@ -219,8 +219,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👤 Author
 
 **Toastie**
-- Website: [advancedplugins.net](https://advancedplugins.net/)
-- GitHub: [@advancedplugins](https://github.com/advancedplugins)
+- GitHub: [@Toastie0](https://github.com/Toastie0)
 
 ## 🙏 Acknowledgments
 
@@ -232,8 +231,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 For issues, questions, or suggestions:
-- Open an issue on [GitHub Issues](https://github.com/advancedplugins/jobs/issues)
-- Visit our website: [advancedplugins.net](https://advancedplugins.net/)
+- Open an issue on [GitHub Issues](https://github.com/Toastie0/Jobs/issues)
 
 ---
 
