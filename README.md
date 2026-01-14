@@ -30,13 +30,18 @@ A comprehensive serverside jobs system with progression, economy rewards, and cu
 
 ## 🔧 Dependencies
 
-### Required
+### Required (Must Install Separately)
 - **Minecraft**: 1.20.1
 - **Fabric Loader**: 0.18.3 or higher
 - **Fabric API**: 0.92.6+1.20.1
 - **Java**: 21 or higher
 - **Impactor Economy**: 5.3.0+ (for economy rewards)
-- **SgUi**: 1.2.2+1.20 (for server-side GUIs)
+
+### Bundled (Already Included in the Mod)
+- **SgUi**: 1.2.2+1.20 (for server-side GUIs) - *No separate installation needed*
+- **Fabric Permissions API**: 0.2-SNAPSHOT - *No separate installation needed*
+
+> **Note**: These libraries are bundled for convenience. If you experience conflicts with other mods using these libraries, please report the issue on GitHub.
 
 ### Optional
 - **LuckPerms**: For permission-based features (planned)
@@ -45,7 +50,10 @@ A comprehensive serverside jobs system with progression, economy rewards, and cu
 
 1. Download the latest release: `Jobs-0.1-1.20.1.jar`
 2. Place in your server's `mods/` folder
-3. Install required dependencies (Fabric API, Impactor, SgUi)
+3. Install required dependencies:
+   - Fabric API (0.92.6+1.20.1)
+   - Impactor Economy (5.3.0+)
+   - *(SgUi and Fabric Permissions API are already bundled inside the mod)*
 4. Start your server
 5. Configure jobs in `config/jobs/`
 
