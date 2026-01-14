@@ -1,0 +1,32 @@
+{
+	"schemaVersion": 1,
+	"id": "jobs",
+	"version": "${version}",
+	"name": "Jobs",
+	"description": "A comprehensive jobs system with progression, economy rewards, and customizable tasks for Fabric servers",
+	"authors": [
+		"Toastie"
+	],
+	"contact": {
+		"homepage": "https://advancedplugins.net/",
+		"sources": "https://github.com/advancedplugins/jobs"
+	},
+	"license": "MIT",
+	"icon": "assets/jobs/icon.png",
+	"environment": "server",
+	"entrypoints": {
+		"server": [
+			"net.advancedjobs.AdvancedJobsMod"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.18.3",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*",
+		"impactor": "*"
+	},
+	"suggests": {
+		"luckperms": "*"
+	}
+}

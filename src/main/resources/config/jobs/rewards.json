@@ -1,0 +1,43 @@
+{
+  "1": [
+    {
+      "type": "command",
+      "name": "$%value%",
+      "variables": {
+        "value": "(3 * (5 * (%level% ^ 2)))"
+      },
+      "commands": [
+        "deposit %value%"
+      ]
+    }
+  ],
+  "2": [
+    {
+      "type": "command",
+      "name": "$%value%",
+      "variables": {
+        "value": "(5 * (5 * (%level% ^ 2)))"
+      },
+      "commands": [
+        "deposit %value%"
+      ]
+    }
+  ],
+  "100": [
+    {
+      "type": "item",
+      "name": "&eWOAH! Something cool",
+      "variables": {
+        "diamonds": "(%level%)",
+        "coals": "(%level% * 3)"
+      },
+      "itemReward": {
+        "material": "minecraft:diamond_block",
+        "amount": 1,
+        "name": "",
+        "lore": [],
+        "glow": true
+      }
+    }
+  ]
+}

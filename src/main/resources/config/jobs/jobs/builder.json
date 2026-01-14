@@ -1,0 +1,26 @@
+{
+  "id": "builder",
+  "name": "§a§lBuilder",
+  "description": "Place blocks and build structures",
+  "actionType": "place",
+  "requiredProgressFormula": "10 * (%level% ^ 2)",
+  "pointsRewardedFormula": "1 * %level%",
+  "requiredPoints": 0,
+  "premium": false,
+  "defaultRewards": ["1"],
+  "bothRewards": false,
+  "levelRewards": {},
+  "specialProgress": {},
+  "guiItem": {
+    "material": "minecraft:bricks",
+    "name": "&2✦ &a&lBuilder&a Job &7[Lvl. %level%]",
+    "lore": [
+      "&7To level up in this job, you must",
+      "&7place &a%required_progress% &7blocks.",
+      "",
+      "&a&lJob Progress &7(%progress_percent%%)",
+      "&2• &a%progress_bar%"
+    ],
+    "glow": false
+  }
+}

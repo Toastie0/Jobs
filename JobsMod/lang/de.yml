@@ -1,0 +1,111 @@
+prefix: '[AdvancedJobs]'
+job-info: "&f&l%name% &7(&f%level%&7) [&f%points%&7/&f%required%&7]"
+jobs-reset: "&eEinige Jobs wurden aktualisiert."
+cant-reset: "&cDu kannst aktuelle Jobs nicht aktualisieren, da der Bungee-Modus aktiviert ist."
+jobs-sync: "&aAlle Jobs wurden erfolgreich synchronisiert."
+cant-sync: "&cDu kannst Jobs nicht synchronisieren, da der Bungee-Modus deaktiviert ist oder Jobs bereits synchronisiert sind"
+daily-reset-info: "&a[AdvancedJobs] Ein täglicher Reset wurde durchgeführt."
+job-placeholder-null: "-"
+admin-cmd:
+  main: "&aHaupt-Admin-Befehl"
+  reload: "&aPlugin neu geladen"
+  could-not-find-user: "&cBenutzer mit Namen %player% konnte nicht gefunden werden"
+  could-not-find-job: "&cJob mit Namen %job% konnte nicht gefunden werden"
+  user-data-deleted: "&aDu hast erfolgreich die Daten von %player% gelöscht."
+  target-user-data-deleted: "&cDeine Job-Daten wurden gelöscht."
+  gave-points: "&aPunkte erfolgreich an ausgewählten Benutzer vergeben"
+  confirm: "&aDu musst diese Aktion mit diesem Befehl noch einmal bestätigen"
+  jobs-reset: "&aJobs zurückgesetzt"
+  levelup: "&aJob des Spielers erfolgreich aufgestuft"
+
+jobs-time-format:
+  with-months-weeks: "%dmo %dw %dd %dh %dm %ds"
+  with-weeks-days: "%dw %dd %dh %dm %ds"
+  with-days-hours: "%dd %dh %dm %ds"
+  with-hours-minutes: "%dh %dm %ds"
+  with-minutes-seconds: "%dm %ds"
+  with-seconds: "%ds"
+
+job-join:
+  only-premium: "&cAusgewählter Job ist nur für Premium-Benutzer"
+  limit: "&cDu hast das Job-Limit erreicht und kannst nicht beitreten. Dein Limit: %limit%"
+  already-in: "&cDu bist bereits in diesem Job"
+  joined: "&aDu bist dem ausgewählten Job beigetreten"
+  points: "&cDu hast nicht die minimalen %points% Punkte, um diesem Job beizutreten!"
+  no-permission: "&cDu kannst diesem Job nicht beitreten!"
+  required-conditions: "&cDu kannst dem Job nicht beitreten, da du die erforderlichen Bedingungen nicht erfüllst"
+
+job-leave:
+  already-left: "&cDu hast diesen Job bereits verlassen."
+  left: "&aDu hast den ausgewählten Job verlassen"
+  required-conditions: "&cDu kannst den Job nicht verlassen, da du die erforderlichen Bedingungen nicht erfüllst"
+  cooldown: "&cDu musst %time% Minuten warten, bevor du diesen Job verlassen kannst"
+
+progress-bar:
+  complete-color: '&a'
+  incomplete-color: '&c'
+  symbol: '|'
+
+job-active:
+  active: "&aJa"
+  not-active: "&cNein"
+
+job-action:
+  join: "&fKlicke zum &aBeitreten&f zu diesem Job"
+  leave: "&fKlicke zum &cVerlassen&f dieses Jobs"
+  premium: "&cDieser Job ist nur für Premium-Benutzer"
+  points: "&cErforderliche Punkte: &4%points%"
+  permission: "&cDu hast nicht die erforderliche Berechtigung"
+
+leaderboard-command:
+  points-leaderboard:
+    - "&7&m=====&r&7[ &2Punkte Bestenliste &7]&m====="
+    - "&7>> &b1. &r&a%advancedjobs_top_points_name_1% &7- &2%advancedjobs_top_points_value_1%"
+    - "&7>> &b2. &r&a%advancedjobs_top_points_name_2% &7- &2%advancedjobs_top_points_value_2%"
+    - "&7>> &b3. &r&a%advancedjobs_top_points_name_3% &7- &2%advancedjobs_top_points_value_3%"
+    - "&7>> &b4. &r&a%advancedjobs_top_points_name_4% &7- &2%advancedjobs_top_points_value_4%"
+    - "&7>> &b5. &r&a%advancedjobs_top_points_name_5% &7- &2%advancedjobs_top_points_value_5%"
+    - "&7>> ..."
+    - "&7>> &aDein Punktestand: &2%advancedjobs_top_points_value_me% &7(&2&b%advancedjobs_top_points_place_me%&r&7)"
+    - "&7>> &aNächste Aktualisierung: &2%advancedjobs_top_time%"
+  levels-leaderboard:
+    - "&7&m=====&r&7[ &2Level Bestenliste in %job_name% &7]&m====="
+    - "&7>> &b1. &r&a%advancedjobs_top_level_name_1_%job%% &7- &2%advancedjobs_top_level_value_1_%job%%"
+    - "&7>> &b2. &r&a%advancedjobs_top_level_name_2_%job%% &7- &2%advancedjobs_top_level_value_2_%job%%"
+    - "&7>> &b3. &r&a%advancedjobs_top_level_name_3_%job%% &7- &2%advancedjobs_top_level_value_3_%job%%"
+    - "&7>> &b4. &r&a%advancedjobs_top_level_name_4_%job%% &7- &2%advancedjobs_top_level_value_4_%job%%"
+    - "&7>> &b5. &r&a%advancedjobs_top_level_name_5_%job%% &7- &2%advancedjobs_top_level_value_5_%job%%"
+    - "&7>> ..."
+    - "&7>> &aDein Level: &2%advancedjobs_top_level_value_me_%job%% &7(&2&b%advancedjobs_top_level_place_me_%job%%&r&7)"
+    - "&7>> &aNächste Aktualisierung: &2%advancedjobs_top_time%"
+
+quests:
+  base-message-progressed: "&7Du hast Fortschritte im Job &b%job_name% gemacht &8(&b%progress%&7/&b%required_progress%&8)"
+  base-message-completed: "&7Du hast den Job &b%job_name% abgeschlossen"
+
+  boss-bar-message-progressed: "&7Du hast Fortschritte im Job &b%job_name% gemacht &8(&b%progress%&7/&b%required_progress%&8)"
+  boss-bar-message-completed: "&7Du hast den Job &b%job_name% abgeschlossen"
+
+  askyblock_createisland-progressed: "&eQuests >> &7Benutzerdefinierte ASkyblock Fortschrittsnachricht :D. &8(&e%progress%&7/&8%required_progress%&8)"
+  askyblock_createisland-completed: "&eQuests >> &7Du hast die ASkyblock Insel-Quest abgeschlossen!"
+
+boosters:
+  points: "Punkte"
+  progress: "Fortschritt"
+  rewards: "Belohnungen"
+  serverStarted: "&7&l+&a&l%percent%% &6&l%type% &r&eServer-Booster gestartet für &6&l%time%&7. &eBetrifft &6&l%affects%"
+  playerStarted: "&7&l+&a&l%percent%% &6&l%type% &r&eBooster gestartet für &6&l%time%&7. &eBetrifft &6&l%affects%"
+  serverEnded: "&7&l+&a&l%percent%% &4&l%type% &r&cServer-Booster beendet. &cBetraf &6&l%affects%"
+  playerEnded: "&7&l+&a&l%percent%% &4&l%type% &r&cBooster beendet. &cBetraf &6&l%affects%"
+  menu: "&6✰ &2&l+%booster%% &a%type% Booster"
+  updated: "&aErfolgreich&7 Booster aktualisiert"
+  command:
+    booster: "&6✰ &2&l+%booster%% &a%type% Booster der &2&l%affects% &7betrifft (&c%time%&7)"
+    server: "&7» &2&lServer-Booster"
+    player: "&7» &2&lSpieler-Booster"
+    permission: "&7» &2&lErlaubnis-Booster"
+  affects:
+    join: "&r&f, "
+    all: "alles"
+    free: "kostenlose Jobs"
+    premium: "Premium-Jobs"

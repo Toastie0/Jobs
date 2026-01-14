@@ -1,0 +1,32 @@
+{
+  "id": "farmer",
+  "name": "§e§lFarmer",
+  "description": "Harvest crops and grow plants",
+  "actionType": "harvest",
+  "requiredProgressFormula": "3 * (%level% ^ 2)",
+  "pointsRewardedFormula": "1 * %level%",
+  "requiredPoints": 0,
+  "premium": false,
+  "defaultRewards": ["1"],
+  "bothRewards": false,
+  "levelRewards": {},
+  "specialProgress": {
+    "nether_wart": 2.0,
+    "wheat": 1.0,
+    "carrots": 1.0,
+    "potatoes": 1.0,
+    "beetroots": 1.0
+  },
+  "guiItem": {
+    "material": "minecraft:wheat",
+    "name": "&2✦ &a&lFarmer&a Job &7[Lvl. %level%]",
+    "lore": [
+      "&7To level up in this job, you must",
+      "&7harvest &a%required_progress% &7plants.",
+      "",
+      "&a&lJob Progress &7(%progress_percent%%)",
+      "&e• &a%progress_bar%"
+    ],
+    "glow": false
+  }
+}

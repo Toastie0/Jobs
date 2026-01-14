@@ -1,0 +1,47 @@
+{
+  "id": "miner",
+  "name": "§6§lMiner",
+  "description": "Mine ores and valuable materials",
+  "actionType": "break",
+  "requiredProgressFormula": "2 * (%level% ^ 2)",
+  "pointsRewardedFormula": "1 * %level%",
+  "requiredPoints": 0,
+  "premium": false,
+  "defaultRewards": ["1"],
+  "bothRewards": false,
+  "levelRewards": {},
+  "specialProgress": {
+    "coal_ore": 1.0,
+    "deepslate_coal_ore": 1.0,
+    "iron_ore": 1.5,
+    "deepslate_iron_ore": 1.5,
+    "copper_ore": 1.0,
+    "deepslate_copper_ore": 1.0,
+    "gold_ore": 2.0,
+    "deepslate_gold_ore": 2.0,
+    "redstone_ore": 1.5,
+    "deepslate_redstone_ore": 1.5,
+    "emerald_ore": 3.0,
+    "deepslate_emerald_ore": 3.0,
+    "lapis_ore": 1.5,
+    "deepslate_lapis_ore": 1.5,
+    "diamond_ore": 3.0,
+    "deepslate_diamond_ore": 3.0,
+    "nether_gold_ore": 2.0,
+    "nether_quartz_ore": 1.0,
+    "ancient_debris": 5.0,
+    "_ore": 1.0
+  },
+  "guiItem": {
+    "material": "minecraft:diamond_pickaxe",
+    "name": "&2✦ &a&lMiner&a Job &7[Lvl. %level%]",
+    "lore": [
+      "&7To level up in this job, you must",
+      "&7break any &a%required_progress% &7ores.",
+      "",
+      "&a&lJob Progress &7(%progress_percent%%)",
+      "&6• &a%progress_bar%"
+    ],
+    "glow": false
+  }
+}
