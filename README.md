@@ -5,7 +5,7 @@ A comprehensive serverside jobs system with progression, economy rewards, and cu
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.20.1-green.svg)](https://www.minecraft.net/)
 [![Fabric](https://img.shields.io/badge/Fabric-0.18.3+-blue.svg)](https://fabricmc.net/)
 [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-CC0--1.0-blue.svg)](LICENSE)
 
 ## 🌟 Features
 
@@ -214,7 +214,9 @@ Contributions are welcome! Please feel free to submit pull requests or open issu
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the CC0 1.0 Universal (Public Domain) License - see the [LICENSE](LICENSE) file for details.
+
+This means you can use, modify, and distribute this mod freely without any restrictions or attribution requirements.
 
 ## 👤 Author
 
