@@ -1,4 +1,4 @@
-# Jobs - Minecraft Fabric Mod
+# JobsFabric - Minecraft Fabric Mod
 
 A comprehensive serverside jobs system with progression, economy rewards, and customizable tasks for Minecraft 1.20.1 Fabric servers.
 
@@ -48,7 +48,7 @@ A comprehensive serverside jobs system with progression, economy rewards, and cu
 
 ## 📥 Installation
 
-1. Download the latest release: `Jobs-0.1-1.20.1.jar`
+1. Download the latest release: `JobsFabric-0.1-1.20.1.jar`
 2. Place in your server's `mods/` folder
 3. Install required dependencies:
    - Fabric API (0.92.6+1.20.1)
@@ -148,7 +148,7 @@ cd Jobs
 # Build with Gradle
 ./gradlew build
 
-# Output: build/libs/Jobs-0.1-1.20.1.jar
+# Output: build/libs/JobsFabric-0.1-1.20.1.jar
 ```
 
 ### Project Structure

@@ -2,7 +2,7 @@
 	"schemaVersion": 1,
 	"id": "jobs",
 	"version": "${version}",
-	"name": "Jobs",
+	"name": "JobsFabric",
 	"description": "A comprehensive jobs system with progression, economy rewards, and customizable tasks for Fabric servers",
 	"authors": [
 		"Toastie"
@@ -16,7 +16,7 @@
 	"environment": "server",
 	"entrypoints": {
 		"server": [
-			"net.advancedjobs.AdvancedJobsMod"
+			"net.toastie.jobs.JobsFabricMod"
 		]
 	},
 	"depends": {
