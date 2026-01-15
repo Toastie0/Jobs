@@ -14,6 +14,8 @@ A comprehensive serverside jobs system with progression, economy rewards, and cu
 - **Economy Integration**: Integrates with Impactor Economy for monetary rewards
 - **Anti-Exploit Protection**: Prevents farming player-placed blocks and bonemeal abuse
 - **Modded Content Support**: Fully compatible with modded blocks and items
+- **Auto-Detection**: Automatically detects all ores, crops, and blocks on server startup
+- **Optional XP Rewards**: Award vanilla Minecraft XP alongside economy rewards (disabled by default)
 - **Serverside Only**: No client-side mod required - works with vanilla clients
 - **Customizable Jobs**: JSON-based configuration for easy job creation and modification
 - **Interactive GUIs**: Server-side GUI menus for job management and progress tracking
@@ -71,9 +73,23 @@ Configuration files are located in `config/jobs/`:
   },
   "storage": {
     "autoSaveIntervalSeconds": 180
+  },
+  "autoDetection": {
+    "enabled": true,
+    "defaultOreProgress": 1.0,
+    "defaultCropProgress": 1.0,
+    "defaultBlockProgress": 1.0
   }
 }
 ```
+
+**Auto-Detection Settings:**
+- `enabled`: Automatically scan registry for ores/crops/blocks on startup
+- `defaultOreProgress`: Default progress value for auto-detected ores
+- `defaultCropProgress`: Default progress value for auto-detected crops  
+- `defaultBlockProgress`: Default progress value for auto-detected placeable blocks
+
+> **Note**: Manual config entries always override auto-detected values!
 
 ### Job Definitions (`jobs/*.json`)
 Each job has its own JSON configuration file with:
@@ -90,12 +106,20 @@ Example job structure:
   "name": "&6&lMiner",
   "progressFormula": "100 * (level^2)",
   "actionType": "break",
+  "xpReward": 0,
+  "xpRewardFormula": "",
   "specialProgress": {
     "_ore": 5.0,
     "stone": 1.0
   }
 }
 ```
+
+**XP Rewards Configuration:**
+- `xpReward`: Flat XP amount per action (0 = disabled, recommended default)
+- `xpRewardFormula`: Optional formula for level-scaled XP (e.g., `%level% * 2`)
+
+> **Important**: XP rewards are separate from vanilla XP drops! Mining ores still gives vanilla XP as normal. Job XP rewards add additional XP on top of vanilla mechanics.
 
 ## 🎮 Usage
 

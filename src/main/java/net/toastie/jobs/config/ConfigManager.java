@@ -22,6 +22,7 @@ import com.google.gson.JsonParser;
 
 import net.toastie.jobs.objects.Job;
 import net.toastie.jobs.objects.Reward;
+import net.toastie.jobs.util.BlockRegistryScanner;
 import net.fabricmc.loader.api.FabricLoader;
 
 /**
@@ -110,6 +111,14 @@ public class ConfigManager {
         antiExploitSettings.addProperty("minBrewingTimeSeconds", 20);
         defaultSettings.add("antiExploit", antiExploitSettings);
         
+        // Auto-detection settings
+        JsonObject autoDetectionSettings = new JsonObject();
+        autoDetectionSettings.addProperty("enabled", true);
+        autoDetectionSettings.addProperty("defaultOreProgress", 1.0);
+        autoDetectionSettings.addProperty("defaultCropProgress", 1.0);
+        autoDetectionSettings.addProperty("defaultBlockProgress", 1.0);
+        defaultSettings.add("autoDetection", autoDetectionSettings);
+        
         try (FileWriter writer = new FileWriter(settingsFile.toFile())) {
             GSON.toJson(defaultSettings, writer);
             LOGGER.info("Created default settings file");
@@ -189,6 +198,12 @@ public class ConfigManager {
                     LOGGER.error("Job file {} has null ID", jobFile.getName());
                     continue;
                 }
+                
+                // Apply auto-detection if enabled
+                if (getBoolean("autoDetection.enabled")) {
+                    job.applyAutoDetection(this);
+                }
+                
                 jobs.put(job.getId(), job);
                 LOGGER.info("Loaded job: {} (name: {}, progressFormula: {})", job.getId(), job.getName(), job.getProgressFormula());
             } catch (Exception e) {
@@ -272,6 +287,13 @@ public class ConfigManager {
      */
     public String getString(String path) {
         return getSettingValue(path).getAsString();
+    }
+    
+    /**
+     * Gets a setting value as double.
+     */
+    public double getDouble(String path) {
+        return getSettingValue(path).getAsDouble();
     }
     
     private com.google.gson.JsonElement getSettingValue(String path) {

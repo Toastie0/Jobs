@@ -172,6 +172,12 @@ public class JobController {
             // Add progress
             jobInfo.addProgress(progressAmount);
             
+            // Award XP if configured (separate from vanilla XP)
+            int xpReward = job.calculateXpReward(jobInfo.getLevel());
+            if (xpReward > 0) {
+                awardPlayerXp(playerUuid, xpReward);
+            }
+            
             // Check for level up
             while (jobInfo.isComplete()) {
                 levelUp(playerUuid, jobId, job, jobInfo);
@@ -332,6 +338,16 @@ public class JobController {
                     sendMessage(playerUuid, "§cInsufficient funds!");
                 }
             });
+        }
+    }
+    
+    /**
+     * Awards XP to a player (separate from vanilla XP drops).
+     */
+    private void awardPlayerXp(UUID playerUuid, int xpAmount) {
+        ServerPlayerEntity player = server.getPlayerManager().getPlayer(playerUuid);
+        if (player != null) {
+            player.addExperience(xpAmount);
         }
     }
     

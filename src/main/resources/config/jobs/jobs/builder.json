@@ -7,6 +7,8 @@
   "pointsRewardedFormula": "1 * %level%",
   "requiredPoints": 0,
   "premium": false,
+  "xpReward": 0,
+  "xpRewardFormula": "",
   "defaultRewards": ["1"],
   "bothRewards": false,
   "levelRewards": {},

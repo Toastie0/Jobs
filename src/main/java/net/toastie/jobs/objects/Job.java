@@ -1,6 +1,8 @@
 package net.toastie.jobs.objects;
 
 import com.google.gson.annotations.SerializedName;
+import net.toastie.jobs.config.ConfigManager;
+import net.toastie.jobs.util.BlockRegistryScanner;
 import net.toastie.jobs.util.FormulaEvaluator;
 
 import java.math.BigDecimal;
@@ -32,6 +34,12 @@ public class Job {
     private final String requiredPermission;
     private final GuiItemConfig guiItem;
     private final Set<Integer> notifyAtPercentages;
+    
+    @SerializedName("xpReward")
+    private int xpReward = 0; // XP per action (default 0 = disabled)
+    
+    @SerializedName("xpRewardFormula")
+    private String xpRewardFormula = null; // Optional formula for XP scaling by level
     
     // Shared formula evaluator for all jobs
     private static final FormulaEvaluator formulaEvaluator = new FormulaEvaluator();
@@ -82,6 +90,58 @@ public class Job {
         return specialProgress.getOrDefault(material.toUpperCase(), 1.0);
     }
     
+    // Calculate XP Reward for Level
+    public int calculateXpReward(int level) {
+        if (xpReward == 0) {
+            return 0; // XP rewards disabled
+        }
+        
+        if (xpRewardFormula != null && !xpRewardFormula.isEmpty()) {
+            try {
+                String formula = xpRewardFormula.replace("%level%", String.valueOf(level));
+                return (int) formulaEvaluator.evaluate(formula);
+            } catch (Exception e) {
+                return xpReward; // Fallback to flat reward
+            }
+        }
+        
+        return xpReward; // Flat reward
+    }
+    
+    // Apply auto-detection based on job type
+    public void applyAutoDetection(ConfigManager config) {
+        double defaultProgress = 1.0;
+        Map<String, Double> autoDetected = new HashMap<>();
+        
+        switch (actionType.toLowerCase()) {
+            case "break":
+                // Assume this is a miner job - scan for ores
+                defaultProgress = config.getDouble("autoDetection.defaultOreProgress");
+                autoDetected = BlockRegistryScanner.scanOres(defaultProgress);
+                break;
+                
+            case "harvest":
+                // Assume this is a farmer job - scan for crops
+                defaultProgress = config.getDouble("autoDetection.defaultCropProgress");
+                autoDetected = BlockRegistryScanner.scanCrops(defaultProgress);
+                break;
+                
+            case "place":
+                // Assume this is a builder job - scan for blocks
+                defaultProgress = config.getDouble("autoDetection.defaultBlockProgress");
+                autoDetected = BlockRegistryScanner.scanPlaceableBlocks(defaultProgress);
+                break;
+        }
+        
+        // Merge auto-detected with manual config (manual overrides auto)
+        for (Map.Entry<String, Double> entry : autoDetected.entrySet()) {
+            String key = entry.getKey().toUpperCase();
+            if (!specialProgress.containsKey(key)) {
+                specialProgress.put(key, entry.getValue());
+            }
+        }
+    }
+    
     // Get Rewards for Level
     public List<String> getRewardsForLevel(int level) {
         List<String> rewards = new ArrayList<>();
@@ -114,4 +174,6 @@ public class Job {
     public String getRequiredPermission() { return requiredPermission; }
     public GuiItemConfig getGuiItem() { return guiItem; }
     public Set<Integer> getNotifyAtPercentages() { return notifyAtPercentages; }
+    public int getXpReward() { return xpReward; }
+    public String getXpRewardFormula() { return xpRewardFormula; }
 }
