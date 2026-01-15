@@ -88,29 +88,25 @@ public class CropHarvestHandler {
      * Handle actual crop harvesting (breaking mature crops).
      */
     private void onBlockBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, net.minecraft.block.entity.BlockEntity blockEntity) {
-        Block block = state.getBlock();
-        
         // Check if this was recently bonemealed
         if (wasRecentlyBonemealed(pos)) {
             return;
         }
         
+        Block block = state.getBlock();
+        boolean shouldReward = false;
+        
         // Check if breaking mature crops
         if (block instanceof CropBlock) {
-            CropBlock crop = (CropBlock) block;
-            if (crop.isMature(state)) {
-                handleCropHarvest(player, crop, pos);
-            }
+            shouldReward = ((CropBlock) block).isMature(state);
         } else if (block instanceof CocoaBlock) {
-            int age = state.get(CocoaBlock.AGE);
-            if (age >= 2) { // Cocoa is mature at age 2
-                handleCropHarvest(player, block, pos);
-            }
+            shouldReward = state.get(CocoaBlock.AGE) >= 2;
         } else if (block instanceof NetherWartBlock) {
-            int age = state.get(NetherWartBlock.AGE);
-            if (age >= 3) { // Nether wart is mature at age 3
-                handleCropHarvest(player, block, pos);
-            }
+            shouldReward = state.get(NetherWartBlock.AGE) >= 3;
+        }
+        
+        if (shouldReward) {
+            handleCropHarvest(player, block, pos);
         }
     }
     
@@ -147,15 +143,16 @@ public class CropHarvestHandler {
      * Awards progress for harvesting a crop.
      */
     private void handleCropHarvest(PlayerEntity player, Block block, BlockPos pos) {
-        // Get the block identifier (with mod namespace for compatibility)
-        String material = Registries.BLOCK.getId(block).toString();
-        // Remove namespace prefix for vanilla blocks to maintain backward compatibility
-        if (material.startsWith("minecraft:")) {
-            material = material.replace("minecraft:", "");
-        }
-        // For modded crops, keep the full identifier (e.g., "modname:custom_crop")
-        
-        LOGGER.debug("Player {} harvested {} at {}", player.getName().getString(), material, pos);
+        String material = getMaterialId(block);
+        LOGGER.debug("Player {} harvested {}", player.getName().getString(), material);
         jobController.awardProgress(player.getUuid(), "harvest", material);
+    }
+    
+    /**
+     * Gets the material ID, removing minecraft: prefix for vanilla blocks.
+     */
+    private String getMaterialId(Block block) {
+        String id = Registries.BLOCK.getId(block).toString();
+        return id.startsWith("minecraft:") ? id.substring(10) : id;
     }
 }

@@ -7,6 +7,7 @@ import net.minecraft.block.CropBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -23,11 +24,9 @@ public class BlockPlaceHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(BlockPlaceHandler.class);
     
     private final JobController jobController;
-    private final BlockBreakHandler blockBreakHandler;
     
     public BlockPlaceHandler(JobController jobController, BlockBreakHandler blockBreakHandler) {
         this.jobController = jobController;
-        this.blockBreakHandler = blockBreakHandler;
     }
     
     /**
@@ -49,46 +48,44 @@ public class BlockPlaceHandler {
         
         ItemStack stack = player.getStackInHand(hand);
         
-        // Check if placing a block
-        if (stack.getItem() instanceof BlockItem) {
-            BlockItem blockItem = (BlockItem) stack.getItem();
-            BlockPos targetPos = hitResult.getBlockPos().offset(hitResult.getSide());
-            
-            // Award progress after successful placement
-            world.getServer().execute(() -> {
-                BlockState placedState = world.getBlockState(targetPos);
-                if (!placedState.isAir()) {
-                    handleBlockPlacement(player, placedState, targetPos);
-                }
-            });
+        // Only process block items
+        if (!(stack.getItem() instanceof BlockItem)) {
+            return ActionResult.PASS;
         }
+        
+        BlockItem blockItem = (BlockItem) stack.getItem();
+        BlockPos targetPos = hitResult.getBlockPos().offset(hitResult.getSide());
+        
+        // Check after a short delay (1 tick) to ensure block is placed
+        ((ServerWorld) world).getServer().execute(() -> {
+            BlockState placedState = world.getBlockState(targetPos);
+            if (!placedState.isAir()) {
+                handleBlockPlacement(player, placedState, targetPos);
+            }
+        });
         
         return ActionResult.PASS;
     }
     
     /**
-     * Awards progress for placing a block and tracks it for anti-exploit.
+     * Awards progress for placing a block.
      */
     private void handleBlockPlacement(PlayerEntity player, BlockState state, BlockPos pos) {
         // Don't reward for placing crops/seeds - those are for Farmer job
         if (state.getBlock() instanceof CropBlock) {
-            LOGGER.debug("Player {} placed crop at {} - not rewarding Builder XP", 
-                player.getName().getString(), pos);
+            LOGGER.info("Skipping crop placement - not a Builder action");
             return;
         }
         
-        // Get the block identifier (with mod namespace for compatibility)
-        String material = net.minecraft.registry.Registries.BLOCK.getId(state.getBlock()).toString();
-        // Remove namespace prefix for vanilla blocks to maintain backward compatibility
-        if (material.startsWith("minecraft:")) {
-            material = material.replace("minecraft:", "");
-        }
-        // For modded blocks, keep the full identifier (e.g., "modname:custom_block")
-        
-        // Track this block to prevent exploit (breaking own blocks for rewards)
-        blockBreakHandler.trackBlockPlacement(pos, player.getUuid());
-        
-        LOGGER.debug("Player {} placed {} at {}", player.getName().getString(), material, pos);
+        String material = getMaterialId(state);
         jobController.awardProgress(player.getUuid(), "place", material);
+    }
+    
+    /**
+     * Gets the material ID, removing minecraft: prefix for vanilla blocks.
+     */
+    private String getMaterialId(BlockState state) {
+        String id = net.minecraft.registry.Registries.BLOCK.getId(state.getBlock()).toString();
+        return id.startsWith("minecraft:") ? id.substring(10) : id;
     }
 }

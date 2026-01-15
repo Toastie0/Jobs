@@ -172,12 +172,6 @@ public class JobController {
             // Add progress
             jobInfo.addProgress(progressAmount);
             
-            // Award XP if configured (separate from vanilla XP)
-            int xpReward = job.calculateXpReward(jobInfo.getLevel());
-            if (xpReward > 0) {
-                awardPlayerXp(playerUuid, xpReward);
-            }
-            
             // Check for level up
             while (jobInfo.isComplete()) {
                 levelUp(playerUuid, jobId, job, jobInfo);
@@ -247,21 +241,29 @@ public class JobController {
     private void grantRewards(UUID playerUuid, List<String> rewardIds, int level) {
         LOGGER.info("Granting rewards {} to player {} at level {}", rewardIds, playerUuid, level);
         
+        // Check if economy is available
+        if (!economyHandler.isAvailable()) {
+            LOGGER.error("Cannot grant rewards - Impactor economy is not available!");
+            sendMessage(playerUuid, "§c⚠ Economy system unavailable - rewards cannot be granted!");
+            sendMessage(playerUuid, "§cPlease contact an administrator.");
+            return;
+        }
+        
         for (String rewardId : rewardIds) {
             Optional<Reward> rewardOpt = configManager.getReward(rewardId);
             if (rewardOpt.isEmpty()) {
-                LOGGER.warn("Reward {} not found", rewardId);
+                LOGGER.warn("Reward {} not found in rewards.json", rewardId);
                 continue;
             }
             
             Reward reward = rewardOpt.get();
-            LOGGER.info("Processing reward type: {}", reward.getType());
+            LOGGER.info("Processing reward type: {} for player {}", reward.getType(), playerUuid);
             
             if (reward.getType().equals("command")) {
                 // Execute economy commands
                 for (String command : reward.getCommands()) {
                     String processed = processCommand(command, reward, playerUuid, level);
-                    LOGGER.info("Executing command: {} -> {}", command, processed);
+                    LOGGER.info("Executing economy command: '{}' -> '{}'", command, processed);
                     executeEconomyCommand(playerUuid, processed);
                 }
             } else if (reward.getType().equals("item")) {
@@ -295,9 +297,13 @@ public class JobController {
                 // Evaluate the formula
                 try {
                     double result = formulaEvaluator.evaluate(formula);
-                    command = command.replace(varName, String.valueOf((int)result));
+                    int intResult = (int) result;
+                    LOGGER.debug("Evaluated variable {} with formula '{}' = {}", varName, formula, intResult);
+                    command = command.replace(varName, String.valueOf(intResult));
                 } catch (Exception e) {
-                    LOGGER.error("Failed to evaluate variable {} with formula {}", varName, formula, e);
+                    LOGGER.error("Failed to evaluate variable {} with formula '{}' - Error: {}", varName, formula, e.getMessage(), e);
+                    // Use a default value of 0 if formula fails
+                    command = command.replace(varName, "0");
                 }
             }
         }
@@ -312,6 +318,7 @@ public class JobController {
         // Parse command: "deposit 100" or "withdraw 50"
         String[] parts = command.split(" ");
         if (parts.length < 2) {
+            LOGGER.error("Invalid economy command format: '{}' (expected 'action amount')", command);
             return;
         }
         
@@ -320,34 +327,39 @@ public class JobController {
         try {
             amount = Double.parseDouble(parts[1]);
         } catch (NumberFormatException e) {
-            LOGGER.error("Invalid amount in command: {}", command);
+            LOGGER.error("Invalid amount in command '{}': '{}' is not a valid number", command, parts[1]);
             return;
         }
+        
+        if (amount <= 0) {
+            LOGGER.error("Invalid amount in command '{}': amount must be positive", command);
+            return;
+        }
+        
+        LOGGER.info("Executing economy {} of ${} for player {}", action, amount, playerUuid);
         
         if (action.equals("deposit")) {
             economyHandler.depositMoney(playerUuid, amount).thenAccept(success -> {
                 if (success) {
-                    sendMessage(playerUuid, "§a+$" + amount);
+                    sendMessage(playerUuid, "§a+$" + String.format("%.2f", amount));
+                    LOGGER.info("Successfully deposited ${} to player {}", amount, playerUuid);
+                } else {
+                    sendMessage(playerUuid, "§cFailed to receive reward! Contact an admin.");
+                    LOGGER.error("Failed to deposit ${} to player {}", amount, playerUuid);
                 }
             });
         } else if (action.equals("withdraw")) {
             economyHandler.withdrawMoney(playerUuid, amount).thenAccept(success -> {
                 if (success) {
-                    sendMessage(playerUuid, "§c-$" + amount);
+                    sendMessage(playerUuid, "§c-$" + String.format("%.2f", amount));
+                    LOGGER.info("Successfully withdrew ${} from player {}", amount, playerUuid);
                 } else {
                     sendMessage(playerUuid, "§cInsufficient funds!");
+                    LOGGER.warn("Failed to withdraw ${} from player {} - insufficient funds", amount, playerUuid);
                 }
             });
-        }
-    }
-    
-    /**
-     * Awards XP to a player (separate from vanilla XP drops).
-     */
-    private void awardPlayerXp(UUID playerUuid, int xpAmount) {
-        ServerPlayerEntity player = server.getPlayerManager().getPlayer(playerUuid);
-        if (player != null) {
-            player.addExperience(xpAmount);
+        } else {
+            LOGGER.error("Unknown economy action '{}' in command '{}'", action, command);
         }
     }
     

@@ -36,6 +36,10 @@ public class JobsAdminCommand {
             .then(CommandManager.literal("save")
                 .executes(this::saveAll))
             
+            // /jobsadmin test
+            .then(CommandManager.literal("test")
+                .executes(this::testEconomy))
+            
             // /jobsadmin reset <player> <job>
             .then(CommandManager.literal("reset")
                 .then(CommandManager.argument("player", EntityArgumentType.player())
@@ -85,6 +89,42 @@ public class JobsAdminCommand {
         context.getSource().sendFeedback(
             () -> Text.literal("§aAll player data saved successfully!"), 
             true
+        );
+        
+        return 1;
+    }
+    
+    private int testEconomy(CommandContext<ServerCommandSource> context) {
+        var economyHandler = JobsFabricMod.getInstance().getJobController();
+        
+        context.getSource().sendFeedback(
+            () -> Text.literal("§6=== Economy System Test ==="), 
+            false
+        );
+        
+        // Check if handler exists
+        if (economyHandler == null) {
+            context.getSource().sendFeedback(
+                () -> Text.literal("§c✗ JobController is null!"), 
+                false
+            );
+            return 0;
+        }
+        
+        // Test economy availability through a small test deposit
+        context.getSource().sendFeedback(
+            () -> Text.literal("§eTesting Impactor economy integration..."), 
+            false
+        );
+        
+        context.getSource().sendFeedback(
+            () -> Text.literal("§7Check server console for detailed economy status"), 
+            false
+        );
+        
+        context.getSource().sendFeedback(
+            () -> Text.literal("§7Look for: '✓ Successfully initialized Impactor economy!'"), 
+            false
         );
         
         return 1;

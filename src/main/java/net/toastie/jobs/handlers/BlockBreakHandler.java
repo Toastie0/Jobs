@@ -58,29 +58,14 @@ public class BlockBreakHandler {
      * Called after a player breaks a block.
      */
     private void onBlockBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity) {
-        // Server-side only
-        if (world.isClient()) {
-            return;
-        }
-        
         // Check if block was placed by a player (anti-exploit)
-        if (trackPlacedBlocks && wasPlacedByPlayer(pos)) {
-            placedBlocks.remove(pos);
-            LOGGER.debug("Ignoring player-placed block break at {}", pos);
+        if (trackPlacedBlocks && placedBlocks.remove(pos) != null) {
+            LOGGER.debug("{} broke own placed block - no reward", player.getName().getString());
             return;
         }
         
-        // Get the block material identifier (with mod namespace for compatibility)
-        String material = Registries.BLOCK.getId(state.getBlock()).toString();
-        // Remove namespace prefix for vanilla blocks to maintain backward compatibility
-        if (material.startsWith("minecraft:")) {
-            material = material.replace("minecraft:", "");
-        }
-        // For modded blocks, keep the full identifier (e.g., "modname:ore_block")
-        
-        LOGGER.debug("Player {} broke block: {}", player.getName().getString(), material);
-        
-        // Award progress for this block break
+        String material = getMaterialId(state);
+        LOGGER.debug("{} broke: {}", player.getName().getString(), material);
         jobController.awardProgress(player.getUuid(), "break", material);
     }
     
@@ -94,10 +79,11 @@ public class BlockBreakHandler {
     }
     
     /**
-     * Checks if a block was placed by a player.
+     * Gets the material ID, removing minecraft: prefix for vanilla blocks.
      */
-    private boolean wasPlacedByPlayer(BlockPos pos) {
-        return placedBlocks.containsKey(pos);
+    private String getMaterialId(BlockState state) {
+        String id = Registries.BLOCK.getId(state.getBlock()).toString();
+        return id.startsWith("minecraft:") ? id.substring(10) : id;
     }
     
     /**

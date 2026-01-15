@@ -26,12 +26,27 @@ public class ImpactorEconomyHandler {
      */
     public void initialize() {
         try {
-            economyService = Impactor.instance().services().provide(EconomyService.class);
-            primaryCurrency = economyService.currencies().primary();
+            LOGGER.info("Attempting to initialize Impactor economy integration...");
             
-            LOGGER.info("Initialized Impactor economy with currency: {}", primaryCurrency.key().asString());
+            economyService = Impactor.instance().services().provide(EconomyService.class);
+            if (economyService == null) {
+                LOGGER.error("EconomyService is null - Impactor may not be loaded correctly!");
+                return;
+            }
+            
+            primaryCurrency = economyService.currencies().primary();
+            if (primaryCurrency == null) {
+                LOGGER.error("Primary currency is null - Impactor economy not configured properly!");
+                return;
+            }
+            
+            LOGGER.info("✓ Successfully initialized Impactor economy!");
+            LOGGER.info("  Currency: {}", primaryCurrency.key().asString());
+            LOGGER.info("  Economy rewards will now work correctly.");
         } catch (Exception e) {
-            LOGGER.error("Failed to initialize Impactor economy", e);
+            LOGGER.error("✗ Failed to initialize Impactor economy!", e);
+            LOGGER.error("  Make sure Impactor mod is installed and loaded before this mod.");
+            LOGGER.error("  Economy rewards will NOT work until this is fixed!");
         }
     }
     
@@ -44,10 +59,12 @@ public class ImpactorEconomyHandler {
      */
     public CompletableFuture<Boolean> depositMoney(UUID uuid, double amount) {
         if (economyService == null || primaryCurrency == null) {
-            LOGGER.error("Economy service not initialized");
+            LOGGER.error("Cannot deposit money - economy service not initialized!");
+            LOGGER.error("  EconomyService: {}, PrimaryCurrency: {}", economyService, primaryCurrency);
             return CompletableFuture.completedFuture(false);
         }
         
+        LOGGER.debug("Attempting to deposit ${} to player {}", amount, uuid);
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         
         economyService.account(primaryCurrency, uuid).thenAccept(account -> {
@@ -55,14 +72,15 @@ public class ImpactorEconomyHandler {
                 BigDecimal depositAmount = BigDecimal.valueOf(amount);
                 account.deposit(depositAmount);
                 
-                LOGGER.debug("Deposited {} to player {}", amount, uuid);
+                LOGGER.debug("Successfully deposited ${} to player {} (new balance: ${})", 
+                    amount, uuid, account.balance());
                 future.complete(true);
             } catch (Exception e) {
-                LOGGER.error("Failed to deposit money to player {}", uuid, e);
+                LOGGER.error("Failed to deposit ${} to player {} - Error: {}", amount, uuid, e.getMessage(), e);
                 future.complete(false);
             }
         }).exceptionally(throwable -> {
-            LOGGER.error("Failed to get account for player {}", uuid, throwable);
+            LOGGER.error("Failed to get account for player {} - Error: {}", uuid, throwable.getMessage(), throwable);
             future.complete(false);
             return null;
         });
@@ -79,10 +97,11 @@ public class ImpactorEconomyHandler {
      */
     public CompletableFuture<Boolean> withdrawMoney(UUID uuid, double amount) {
         if (economyService == null || primaryCurrency == null) {
-            LOGGER.error("Economy service not initialized");
+            LOGGER.error("Cannot withdraw money - economy service not initialized!");
             return CompletableFuture.completedFuture(false);
         }
         
+        LOGGER.debug("Attempting to withdraw ${} from player {}", amount, uuid);
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         
         economyService.account(primaryCurrency, uuid).thenAccept(account -> {
@@ -92,18 +111,20 @@ public class ImpactorEconomyHandler {
                 // Check if player has enough balance
                 if (account.balance().compareTo(withdrawAmount) >= 0) {
                     account.withdraw(withdrawAmount);
-                    LOGGER.debug("Withdrew {} from player {}", amount, uuid);
+                    LOGGER.debug("Successfully withdrew ${} from player {} (new balance: ${})", 
+                        amount, uuid, account.balance());
                     future.complete(true);
                 } else {
-                    LOGGER.debug("Player {} has insufficient funds for withdrawal of {}", uuid, amount);
+                    LOGGER.debug("Player {} has insufficient funds for withdrawal of ${} (balance: ${})", 
+                        uuid, amount, account.balance());
                     future.complete(false);
                 }
             } catch (Exception e) {
-                LOGGER.error("Failed to withdraw money from player {}", uuid, e);
+                LOGGER.error("Failed to withdraw ${} from player {} - Error: {}", amount, uuid, e.getMessage(), e);
                 future.complete(false);
             }
         }).exceptionally(throwable -> {
-            LOGGER.error("Failed to get account for player {}", uuid, throwable);
+            LOGGER.error("Failed to get account for player {} - Error: {}", uuid, throwable.getMessage(), throwable);
             future.complete(false);
             return null;
         });

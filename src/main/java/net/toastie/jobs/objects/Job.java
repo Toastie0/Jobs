@@ -35,12 +35,6 @@ public class Job {
     private final GuiItemConfig guiItem;
     private final Set<Integer> notifyAtPercentages;
     
-    @SerializedName("xpReward")
-    private int xpReward = 0; // XP per action (default 0 = disabled)
-    
-    @SerializedName("xpRewardFormula")
-    private String xpRewardFormula = null; // Optional formula for XP scaling by level
-    
     // Shared formula evaluator for all jobs
     private static final FormulaEvaluator formulaEvaluator = new FormulaEvaluator();
     
@@ -90,24 +84,6 @@ public class Job {
         return specialProgress.getOrDefault(material.toUpperCase(), 1.0);
     }
     
-    // Calculate XP Reward for Level
-    public int calculateXpReward(int level) {
-        if (xpReward == 0) {
-            return 0; // XP rewards disabled
-        }
-        
-        if (xpRewardFormula != null && !xpRewardFormula.isEmpty()) {
-            try {
-                String formula = xpRewardFormula.replace("%level%", String.valueOf(level));
-                return (int) formulaEvaluator.evaluate(formula);
-            } catch (Exception e) {
-                return xpReward; // Fallback to flat reward
-            }
-        }
-        
-        return xpReward; // Flat reward
-    }
-    
     // Apply auto-detection based on job type
     public void applyAutoDetection(ConfigManager config) {
         double defaultProgress = 1.0;
@@ -127,9 +103,8 @@ public class Job {
                 break;
                 
             case "place":
-                // Assume this is a builder job - scan for blocks
-                defaultProgress = config.getDouble("autoDetection.defaultBlockProgress");
-                autoDetected = BlockRegistryScanner.scanPlaceableBlocks(defaultProgress);
+                // Builder job - accept ALL placeable blocks without validation
+                // Leave specialProgress empty so isValidAction() returns true for any block
                 break;
         }
         
@@ -174,6 +149,4 @@ public class Job {
     public String getRequiredPermission() { return requiredPermission; }
     public GuiItemConfig getGuiItem() { return guiItem; }
     public Set<Integer> getNotifyAtPercentages() { return notifyAtPercentages; }
-    public int getXpReward() { return xpReward; }
-    public String getXpRewardFormula() { return xpRewardFormula; }
 }
