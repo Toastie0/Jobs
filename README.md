@@ -11,14 +11,11 @@ A comprehensive serverside jobs system with progression, economy rewards, and cu
 
 - **Multiple Jobs System**: Players can have up to 3 active jobs simultaneously
 - **Progressive Leveling**: Custom formula-based progression system with configurable requirements
-- **Economy Integration**: Integrates with Impactor Economy for monetary rewards
-- **Anti-Exploit Protection**: Prevents farming player-placed blocks and bonemeal abuse
-- **Modded Content Support**: Fully compatible with modded blocks and items
-- **Auto-Detection**: Automatically detects all ores, crops, and blocks on server startup
-- **Optional XP Rewards**: Award vanilla Minecraft XP alongside economy rewards (disabled by default)
+- **Economy Integration**: Seamless Impactor Economy integration for monetary rewards
+- **Modded Content Support**: Automatically compatible with any mod - no configuration needed
 - **Serverside Only**: No client-side mod required - works with vanilla clients
-- **Customizable Jobs**: JSON-based configuration for easy job creation and modification
 - **Interactive GUIs**: Server-side GUI menus for job management and progress tracking
+- **Performance Optimized**: Formula caching, dirty tracking, and automatic cleanup
 
 ## 📋 Available Jobs
 
@@ -32,32 +29,23 @@ A comprehensive serverside jobs system with progression, economy rewards, and cu
 
 ## 🔧 Dependencies
 
-### Required (Must Install Separately)
+### Required
 - **Minecraft**: 1.20.1
-- **Fabric Loader**: 0.18.3 or higher
+- **Fabric Loader**: 0.18.3+
 - **Fabric API**: 0.92.6+1.20.1
-- **Java**: 21 or higher
-- **Impactor Economy**: 5.3.0+ (for economy rewards)
+- **Java**: 21+
+- **Impactor Economy**: 5.3.0+
 
-### Bundled (Already Included in the Mod)
-- **SgUi**: 1.2.2+1.20 (for server-side GUIs) - *No separate installation needed*
-- **Fabric Permissions API**: 0.2-SNAPSHOT - *No separate installation needed*
-
-> **Note**: These libraries are bundled for convenience. If you experience conflicts with other mods using these libraries, please report the issue on GitHub.
-
-### Optional
-- **LuckPerms**: For permission-based features (planned)
+### Bundled (Included)
+- SgUi 1.2.2+1.20 (server-side GUIs)
+- Fabric Permissions API 0.2-SNAPSHOT
 
 ## 📥 Installation
 
 1. Download the latest release: `JobsFabric-0.1-1.20.1.jar`
 2. Place in your server's `mods/` folder
-3. Install required dependencies:
-   - Fabric API (0.92.6+1.20.1)
-   - Impactor Economy (5.3.0+)
-   - *(SgUi and Fabric Permissions API are already bundled inside the mod)*
-4. Start your server
-5. Configure jobs in `config/jobs/`
+3. Install Fabric API (0.92.6+1.20.1) and Impactor Economy (5.3.0+)
+4. Start your server - configs generate automatically in `config/jobs/`
 
 ## ⚙️ Configuration
 
@@ -77,88 +65,79 @@ Configuration files are located in `config/jobs/`:
   "autoDetection": {
     "enabled": true,
     "defaultOreProgress": 1.0,
-    "defaultCropProgress": 1.0,
-    "defaultBlockProgress": 1.0
+    "defaultCropProgress": 1.0
   }
 }
 ```
 
-**Auto-Detection Settings:**
-- `enabled`: Automatically scan registry for ores/crops/blocks on startup
-- `defaultOreProgress`: Default progress value for auto-detected ores
-- `defaultCropProgress`: Default progress value for auto-detected crops  
-- `defaultBlockProgress`: Default progress value for auto-detected placeable blocks
-
-> **Note**: Manual config entries always override auto-detected values!
-
 ### Job Definitions (`jobs/*.json`)
-Each job has its own JSON configuration file with:
-- **Progress Formula**: Custom mathematical expressions (e.g., `100 * (level^2)`)
-- **Action Types**: `break`, `harvest`, `place`, etc.
-- **Special Progress**: Material-specific multipliers
-- **Rewards**: Economy rewards per level
+Each job has its own JSON configuration with:
+- **Progress Formula**: Custom expressions (e.g., `10 * (%level% ^ 2)`)
+- **Action Types**: `break`, `harvest`, `place`
+- **Special Progress**: Material-specific multipliers (optional)
+- **Rewards**: Economy rewards linked to rewards.json
 - **GUI Configuration**: Custom icons and descriptions
 
-Example job structure:
+Example:
 ```json
 {
   "id": "miner",
-  "name": "&6&lMiner",
-  "progressFormula": "100 * (level^2)",
+  "name": "§6§lMiner",
+  "requiredProgressFormula": "2 * (%level% ^ 2)",
   "actionType": "break",
-  "xpReward": 0,
-  "xpRewardFormula": "",
+  "defaultRewards": ["1"],
   "specialProgress": {
-    "_ore": 5.0,
-    "stone": 1.0
+    "diamond_ore": 5.0,
+    "coal_ore": 1.0
   }
 }
 ```
 
-**XP Rewards Configuration:**
-- `xpReward`: Flat XP amount per action (0 = disabled, recommended default)
-- `xpRewardFormula`: Optional formula for level-scaled XP (e.g., `%level% * 2`)
-
-> **Important**: XP rewards are separate from vanilla XP drops! Mining ores still gives vanilla XP as normal. Job XP rewards add additional XP on top of vanilla mechanics.
+### Rewards System (`rewards.json`)
+Define economy rewards with formulas:
+```json
+{
+  "1": [
+    {
+      "type": "command",
+      "name": "$%value%",
+      "variables": {
+        "value": "(3 * (5 * (%level% ^ 2)))"
+      },
+      "commands": ["deposit %value%"]
+    }
+  ]
+}
+```
 
 ## 🎮 Usage
 
 ### Player Commands
-- `/jobs` - Open the jobs menu (GUI)
-- Join jobs by clicking in the GUI
-- View progress and statistics
-- Leave jobs with progress saved
+- `/jobs` - Open the jobs menu GUI to join/leave jobs and view progress
 
 ### Admin Commands
-*(Coming in Phase 2)*
+- `/jobsadmin reload` - Reload configuration files
+- `/jobsadmin save` - Force save all player data
+- `/jobsadmin test` - Test economy integration
+- `/jobsadmin reset <player> <job>` - Reset specific job progress
+- `/jobsadmin resetall <player>` - Reset all jobs for a player
+- `/jobsadmin info` - View loaded jobs and config info
 
-## 🚀 Performance Optimizations
+## 🚀 Performance
 
-This mod includes several performance enhancements:
-- **Formula Caching**: 50-80% reduction in mathematical calculations
-- **Memory Management**: Automatic cleanup of tracking data every 5 minutes
+- **Formula Caching**: 50-80% reduction in calculations
 - **Dirty Tracking**: Only saves modified player data
-- **Async Operations**: Economy transactions run asynchronously
-- **Time-Based Expiry**: Old entries auto-expire after 10 minutes
-
-See [OPTIMIZATION_REPORT.md](OPTIMIZATION_REPORT.md) for detailed analysis.
-
-## 🔒 Anti-Exploit Features
-
-- **Block Placement Tracking**: Player-placed blocks don't give mining progress
-- **Bonemeal Cooldown**: 1-second cooldown prevents bonemeal farming
-- **Timestamp Tracking**: Automatic cleanup prevents memory leaks
-- **Validation System**: Action-type whitelists prevent invalid progress
+- **Async Economy**: Non-blocking transactions
+- **Auto-Cleanup**: Memory management with time-based expiry
 
 ## 🧩 Modded Content Support
 
-The mod fully supports modded blocks and items:
-- Uses full resource identifiers (e.g., `modname:copper_ore`)
-- Wildcard support (e.g., `_ore` matches all ores)
-- Automatic compatibility with any mod
-- No additional configuration required
+Automatically works with ANY Fabric mod - no configuration needed:
+- **Miner**: Detects any block with `_ore` in the name
+- **Farmer**: Detects any block extending CropBlock
+- **Builder**: Accepts all placeable blocks
 
-See [MODDED_CONTENT_SUPPORT.md](MODDED_CONTENT_SUPPORT.md) for details.
+Server owners can optionally customize rewards for specific modded blocks in job JSON files.
 
 ## 🏗️ Development
 
@@ -210,27 +189,26 @@ src/main/java/net/advancedjobs/
 
 ## 📊 Roadmap
 
-### Phase 1: Core System ✅
-- [x] Job framework
-- [x] Progress tracking
-- [x] Economy integration
-- [x] Basic jobs (Miner, Farmer, Builder)
-- [x] Anti-exploit systems
+### Phase 1: Core System ✅ **COMPLETE**
+- [x] Job framework with progression
+- [x] Economy integration (Impactor)
+- [x] Three jobs (Miner, Farmer, Builder)
+- [x] Interactive GUIs
+- [x] Admin commands
 - [x] Performance optimizations
+- [x] Modded content support
 
-### Phase 2: Expansion 🚧
-- [ ] 17+ additional jobs
+### Phase 2: Expansion 📋
+- [ ] 17+ additional jobs (Fighter, Fisherman, Hunter, Tamer, etc.)
 - [ ] Job-specific achievements
 - [ ] Leaderboards
 - [ ] Boosters & multipliers
-- [ ] Permission integration
 
-### Phase 3: Advanced Features 📋
-- [ ] Custom job creation GUI
-- [ ] Job rewards (items, commands)
+### Phase 3: Advanced Features 🔮
+- [ ] Permission integration
+- [ ] Item rewards
 - [ ] Job quests/milestones
 - [ ] Statistics dashboard
-- [ ] API for developers
 
 ## 🤝 Contributing
 
